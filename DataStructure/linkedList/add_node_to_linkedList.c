@@ -36,4 +36,5 @@ int main(void)
     free(head); // head 노드 메모리 해제
 
     return 0;
+    
 }
