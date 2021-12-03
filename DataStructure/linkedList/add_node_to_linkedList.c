@@ -25,8 +25,14 @@ int main(void)
     addFirst(head, 30); // head 노드 뒤에 data가 30인 새 노드 추가
 
     struct NODE *curr = head->next; // 연결 리스트 순회용 포린터에 첫 번째 노드의 주소 저장
+    while (curr != NULL)            // 포인터가 NULL이 아닐 떄 계속 반복
+    {   
+        printf("%d\n", curr->data); // 현재 노드의 데이터 출력
+        curr = curr->next;          // 포인터에 다음 노드 주소 저장
+    }
 
-    while (curr != NULL)
+    curr = head->next;      // 연결 리스트 순회용 포린터에 첫 번째 노드의 주소 저장
+    while (curr != NULL)    // 포인터가 NULL이 아닐 떄 계속 반복
     {
         struct NODE *next = curr->next; // 현재 노드의 다음 노드 주소를 임시로 저장
         free(curr);     // 현재 노드의 메모리 해제
@@ -36,5 +42,5 @@ int main(void)
     free(head); // head 노드 메모리 해제
 
     return 0;
-    
+
 }
