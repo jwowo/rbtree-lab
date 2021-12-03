@@ -27,20 +27,26 @@ int main(void)
 
 Node* searchNode(Node *root, char x)
 {
+    // 루트노드부터 탐색할 포인터 변수 선언
     Node *p = root;
 
+    // 루트 노드부터 단말 노드까지 이진 탐색
     while (p != NULL)
     {
-        if (p->key == x) {
+        // 탐색 성공시 해당 노드 반환
+        if (p->key == x) {  
             print('찾았습니다~!');
             return p;
         }
-        else if (p->key < x)
+        // 검색하고자 하는 값이 현재 노드의 값보다 크다면 현재 노드를 오른쪽 서브트리로 이동
+        else if (p->key < x)    
             p = p->right;
+        // 검색하고자 하는 값이 현재 노드의 값보다 작다면 현재 노드를 왼쪽 서브트리로 이동        
         else
             p = p->left;
     }
 
+    // 탐색 완료 후까지 검색하고자 하는 값을 찾지 못했으면 NULL 반환 
     print("못찾았습니다~!");
     return NULL;
 }
