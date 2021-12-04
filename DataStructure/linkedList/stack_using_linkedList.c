@@ -14,9 +14,9 @@ public :
 #include <stdlib.h>
 
 /* 1. 연결 리스트의 노드 정의 */
-typedef struct stack {
+typedef struct _stack {
     char data;
-    struct stack *link;
+    struct _stack *link;
 } stack;
 
 stack *top; // 스택의 맨 상위 노드의 주소를 가리키는 포인터 변수
@@ -90,18 +90,21 @@ int main(void)
     printStack();
     push('A');
     push('B');
+    check = peek();
+    printf("top : %c\n", check);
     push('C');
     printStack();
     pop();
     push('D');
     check = peek();
-    printf("peek : %c\n", check);
+    printf("top : %c\n", check);
     push('E');
     push('F');
     printStack();
     pop();
     pop();
     printStack();
+    pop();
 
     return 0;
 }
