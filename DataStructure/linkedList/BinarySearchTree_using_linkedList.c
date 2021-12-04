@@ -1,52 +1,130 @@
-/*
-이진 탐색 트리란 원소를 특정한 조건에 따라 정렬해놓은 이진 트리
-모든 원소는 유일한 키 값을 갖는다
-왼쪽 서브트리의 모든 원소들은 루트의 키보다 작은 값을 갖는다
-오른쪽 서브트리의 모든 원소들은 루트의 키보다 큰 값을 갖는다
-왼쪽 서브트리와 오른쪽 서브트리도 이진탐색트리이다(재귀적)
-이 투리안에 어떤 노드를 루트로 잡아도 항상 위 조건이 참이어야 한다.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 
+// typedef char data;
 typedef struct _Node {
     char key;
-    struct _Node *left;
-    struct _Node *right;
+    struct _Node* left;
+    struct _Node* right;
 } Node;
 
-Node* searchNode(Node *root, char x);
-Node* insertNode(Node *root, char x);
-Node* deleteNode(Node *root, char x);
-
-int main(void)
-{
-    return 0;
+Node* search(Node* root, char x) {
+    Node* p = root;
+    while (p != NULL) {
+        if (p -> key == x)
+            return p;
+        else if (p -> key < x)
+            p = p -> right;
+        else
+            p = p -> left;
+    }
+    return NULL;
 }
-
-Node* searchNode(Node *root, char x)
-{
-    // 루트노드부터 탐색할 포인터 변수 선언
-    Node *p = root;
-
-    // 루트 노드부터 단말 노드까지 이진 탐색
-    while (p != NULL)
-    {
-        // 탐색 성공시 해당 노드 반환
-        if (p->key == x) {  
-            print('찾았습니다~!');
+Node* insert(Node* root, char x){
+    Node* p = root;
+    Node* parent = NULL;
+    while (p != NULL) {
+        parent = p;
+        if (p -> key == x){
+            printf("같은 키가 있습니다. \n");
             return p;
         }
-        // 검색하고자 하는 값이 현재 노드의 값보다 크다면 현재 노드를 오른쪽 서브트리로 이동
-        else if (p->key < x)    
-            p = p->right;
-        // 검색하고자 하는 값이 현재 노드의 값보다 작다면 현재 노드를 왼쪽 서브트리로 이동        
+        else if (p -> key < x)
+            p = p -> right;
         else
-            p = p->left;
+            p = p -> left;
+    }
+    // 새 노드 할당
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode -> key = x;
+    newNode -> left = newNode -> right = NULL;
+    // parent 의 자식으로 새 노드 붙이기
+    if (parent != NULL) { // 맨처음 삽입하는 상황일 수도 있어서 (루트노드 삽입시)
+        if (parent -> key < newNode -> key){
+            parent -> right = newNode;
+        }
+        else {
+            parent -> left = newNode;
+        }
+    }
+    return newNode;
+}
+Node* delete(Node* root, char x){
+    Node* p = root;
+    Node* parent = NULL;
+    while ((p != NULL) && (p -> key != x)) {
+        parent = p;
+        if (p -> key < x){
+            p = p -> right;
+        }
+        else
+            p = p -> left;
+    }
+    if (p == NULL) {
+        printf("찾는 노드가 없습니다. \n");
+        return root;
     }
 
-    // 탐색 완료 후까지 검색하고자 하는 값을 찾지 못했으면 NULL 반환 
-    print("못찾았습니다~!");
-    return NULL;
+    if (p -> left == NULL && p -> right == NULL) { // 차수가 0
+        if (parent == NULL) // 차수가 0(자식 x), 부모노드x (루트노드 하나만 있을 때)
+            root = NULL;
+        else {
+            if (parent -> left == p) // 자식이 없으면서, 자신이 왼쪽 노드일 때.
+                parent -> left = NULL;
+            else // 자식이 없으면서, 자신이 오른쪽 노드일 때.
+                parent -> right = NULL;
+        }
+    }
+    else if (p -> left == NULL || p -> right == NULL){ // 차수가 1
+        Node *child = (p -> left != NULL) ? p -> left : p -> right; // 차수가 1일 때, 자식의 노드를 child 변수가 참조함.
+        if (parent == NULL){
+            root = child; // 자식이 1명인데 부모가 없으므로, 루트 노드를 삭제하는 중이었다는 뜻이니까 자식을 루트로 둔다.
+        }
+        else{
+            if (parent -> left == p){ // 자신이 부모 노드의 왼쪽 자식 이었으면, 그 자리에 본인이 드감.
+                parent -> left = child;
+            }else{ // 오른쪽 자식이었으면 부모노드의 오른쪽 자식에 (지금 내자리) 외동딸로 등록.
+                parent -> right = child;
+            }
+        }
+    }
+    else{ // 차수가 2
+        Node * succ_parent = p;  // 지울 놈.
+        Node* succ = p -> right;  // 지울 놈의 오른쪽 자식의 왼쪽 노드를 쭉 타고 들어가서(Null 만날때까지) 그놈을 지울 놈자리에 앉혀야 한다.
+        while (succ -> left != NULL) {
+            succ_parent = succ;
+            succ = succ -> left;
+        }
+        p -> key = succ -> key;
+        if (succ_parent -> left == succ){
+            succ_parent -> left = succ -> right;
+        }else{
+            succ_parent -> right = succ -> right;
+        }
+        p = succ; // free(p)를 통해 놓아주기 위해 설정.
+    }
+
+    free(p);
+    return 0;
+}
+void inorder(Node* root){
+    if (root == NULL){
+        return;
+    }
+    inorder(root -> left);
+    printf("%c", root -> key);
+    inorder(root -> right);
+}
+int main(){
+    Node *root = insert(NULL, 'D');
+    insert(root, 'B');
+    insert(root, 'A');
+    insert(root, 'E');
+    insert(root, 'C');
+    insert(root, 'F');
+    inorder(root); printf("\n");
+
+    delete(root, 'A');
+    inorder(root); printf("\n");
+    return 0;
 }
