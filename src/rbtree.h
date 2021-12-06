@@ -29,4 +29,14 @@ int rbtree_erase(rbtree *, node_t *);
 
 int rbtree_to_array(const rbtree *, key_t *, const size_t);
 
+// --- added by jongwoo ---
+// --- functions related to rotation ---
+node_t * find_rotation_target(rbtree * tree, node_t * x);
+void right_rotation(rbtree * tree, node_t * x);
+void left_rotation(rbtree * tree, node_t * x);
+
+// --- functions related to insert ---
+void rbtree_insert_fixup(rbtree *tree, node_t *z);
+//
+
 #endif  // _RBTREE_H_
