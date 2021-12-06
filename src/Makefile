@@ -2,7 +2,9 @@
 
 CFLAGS=-Wall -g
 
-test_rotate_rbtree: test_rotate_rbtree.o rbtree.o
+driver: driver.o rbtree.o
+test_rbtree_rotate: test_rbtree_rotate.o rbtree.o
+test_rbtree_insert: test_rbtree_insert.o rbtree.o
 
 clean:
-	rm -f test_rotate_rbtree *.o
+	rm -f driver test_rotate test_rbtree_insert *.o
