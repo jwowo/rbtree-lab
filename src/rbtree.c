@@ -4,7 +4,12 @@
 
 rbtree *new_rbtree(void) {
   rbtree *p = (rbtree *)calloc(1, sizeof(rbtree));
+  node_t *nilNode = (node_t *)calloc(1, sizeof(node_t));
   // TODO: initialize struct if needed
+  
+  nilNode->color = RBTREE_BLACK;
+  p->nil = nilNode;
+  
   return p;
 }
 

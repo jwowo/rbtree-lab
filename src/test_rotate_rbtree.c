@@ -2,10 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void right_rotation(rbtree * tree, node_t * x){
-    // TODO!
-}
-
 node_t * find_rotation_target(rbtree * tree, node_t * x) {
     node_t * curr = tree->root;
 
@@ -22,44 +18,81 @@ node_t * find_rotation_target(rbtree * tree, node_t * x) {
         else 
             curr = curr->left;
     }
-
     return NULL;
+}
+
+void right_rotation(rbtree * tree, node_t * x){
+    // TODO!
+    node_t *target;
+    node_t *y;
+
+    target = find_rotation_target(tree, x);
+
+    if (target == NULL) {
+        printf("%d를 못찾았습니다~!", x->key);
+        return;
+    }
+    else
+        printf("%d 를 찾았습니다~!\n", target->key);
+
+    // 1. target의 left으로 y 설정
+    y = target->left;
+    // 2. y의 오른쪽 서브트리를 target의 왼쪽 서브트리로 옮김
+    target->left = y->right;
+    // 3. y의 오른쪽 노드가 NIL이 아니라면, y의 오른쪽 노드 부모를 target으로 설정
+    if (y->right != NULL) {
+        y->right->parent = target;
+    }
+    // 4. y의 부모 노드를 target의 부모 노드로 설정
+    y->parent = target->parent;
+    // 5. target의 부모 노드가 nil이라면, 트리 구조체의 root를 y로 설정
+    if (target->parent == tree->nil)
+        tree->root = y;
+    // 6. target이 target 부모 노드의 왼쪽이면, target 부모의 왼쪽을 y로 설정
+    else if (target == target->parent->left)
+        target->parent->left = y;
+    // 7. target이 target 부모 노드의 오른쪽이면, target 부모의 오른쪽을 y로 설정
+    else
+        target->parent->right = y;
+    // 8. target을 y의 오른쪽으로 설정
+    y->right = target;
+    // 9. target의 부모를 y로 설정
+    target->parent = y;
 }
 
 void left_rotation(rbtree * tree, node_t * x){
     // TODO!
-    node_t *parent, *target;
+    node_t *target;
     node_t *y;
     
     // 루트에서 삭제할 노드까지 이동
     target = find_rotation_target(tree, x);
 
-    if (target == NULL) 
+    if (target == NULL) {
         printf("%d를 못찾았습니다~!", x->key);
+        return;
+    }
     else
         printf("%d 를 찾았습니다~!\n", target->key);
 
     // 회전할 노드의 부모 노드 설정
-    parent = target->parent;
+    // parent = target->parent;
 
     y = target->right;
     target->right = y->left;
     
-    if (y->left != tree->nil) {
+    if (y->left != tree->nil) 
         y->left->parent = target;
-    }
     
     y->parent = target->parent;
     
-    if (target->parent == tree->nil) {
+    if (target->parent == tree->nil) 
         tree->root = y;
-    }
-    else if (target == target->parent->left) {
+    else if (target == target->parent->left)
         target->parent->left = y;
-    } 
-    else {
+    else 
         target->parent->right = y;
-    }
+
     y->left = target;
     target->parent = y;
 }
@@ -152,7 +185,6 @@ void right_rotation_test(){
     rbtree_print(t1);
 
     rbtree * t2 = make_testcase_rbtree();
-    rbtree_print(t2);
     printf("right_rotation(T, 5) -- 회전하려는 노드가 부모의 왼쪽 자식인 경우\n");
     right_rotation(t2, t2->root->left);
     rbtree_print(t2);
@@ -186,6 +218,6 @@ void left_rotation_test(){
 }
 
 int main(int argc, char *argv[]) {
-    // right_rotation_test();
+    right_rotation_test();
     left_rotation_test();
 }
