@@ -7,6 +7,10 @@
 .LSOverride
 ._*
 
+# VSCode
+./.vscode/settings.json
+.vscode
+
 # Prerequisites
 *.d
 
