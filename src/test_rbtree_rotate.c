@@ -1,7 +1,8 @@
 #include "rbtree.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+/*
+// added by jongwoo
 node_t * find_rotation_target(rbtree * tree, node_t * x) {
     node_t * curr = tree->root;
 
@@ -70,7 +71,7 @@ void left_rotation(rbtree * tree, node_t * x){
 
     if (target == NULL) {
         printf("%d를 못찾았습니다~!", x->key);
-        return;
+        return; 
     }
     else
         printf("%d 를 찾았습니다~!\n", target->key);
@@ -96,7 +97,8 @@ void left_rotation(rbtree * tree, node_t * x){
     y->left = target;
     target->parent = y;
 }
-
+//
+*/
 
 void _rbtree_print(rbtree * tree, node_t * curr, int tab_count) {
     if(tree->nil == curr){
@@ -175,6 +177,7 @@ rbtree* make_testcase_rbtree(){
     
     return t;
 }
+
 void right_rotation_test(){
     printf("right_rotation_test!\n");
     rbtree * t1 = make_testcase_rbtree();
