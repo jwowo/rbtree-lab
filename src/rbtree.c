@@ -101,10 +101,11 @@ void left_rotation(rbtree * tree, node_t * x){
     y->left = target;
     target->parent = y;
 }
-//
 
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
+  
+
   free(t);
 }
 
@@ -158,8 +159,6 @@ void rbtree_insert_fixup(rbtree *t, node_t *z) {
         left_rotation(t, z->parent->parent);
       }
     }
-    
-    
   }
   t->root->color = RBTREE_BLACK;
 }
@@ -203,21 +202,45 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  return t->root;
+  node_t * curr = t->root;
+
+  while (curr != NULL) {
+    if (curr->key == key)
+      return curr;
+
+    if (curr->key < key) 
+      curr = curr->right;
+    else
+      curr = curr->left;
+  }
+
+  return NULL;
 }
 
 node_t *rbtree_min(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t * curr = t->root;
+
+  while (curr->left != NULL) {
+    curr = curr->left;
+  }
+  return curr;
 }
 
 node_t *rbtree_max(const rbtree *t) {
   // TODO: implement find
-  return t->root;
+  node_t * curr = t->root;
+
+  while (curr->right != NULL) {
+    curr = curr->right;
+  }
+  return curr;
 }
 
 int rbtree_erase(rbtree *t, node_t *p) {
   // TODO: implement erase
+
+
   return 0;
 }
 
