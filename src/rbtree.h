@@ -26,17 +26,6 @@ node_t *rbtree_find(const rbtree *, const key_t);
 node_t *rbtree_min(const rbtree *);
 node_t *rbtree_max(const rbtree *);
 int rbtree_erase(rbtree *, node_t *);
-
 int rbtree_to_array(const rbtree *, key_t *, const size_t);
-
-// --- added by jongwoo ---
-// --- functions related to rotation ---
-node_t * find_rotation_target(rbtree * tree, node_t * x);
-void right_rotation(rbtree * tree, node_t * x);
-void left_rotation(rbtree * tree, node_t * x);
-
-// --- functions related to insert ---
-void rbtree_insert_fixup(rbtree *tree, node_t *z);
-//
 
 #endif  // _RBTREE_H_
