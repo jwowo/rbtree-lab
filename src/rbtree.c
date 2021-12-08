@@ -17,69 +17,55 @@ rbtree *new_rbtree(void) {
 
 void right_rotation(rbtree * tree, node_t * x){
     // TODO!
-    node_t *target;
+
     node_t *y;
 
-    target = rbtree_find(tree, x->key);
-
-    if (target == NULL) {
-        return;
-    }
-
     // 1. target의 left으로 y 설정
-    y = target->left;
+    y = x->left;
     // 2. y의 오른쪽 서브트리를 target의 왼쪽 서브트리로 옮김
-    target->left = y->right;
+    x->left = y->right;
     // 3. y의 오른쪽 노드가 NIL이 아니라면, y의 오른쪽 노드 부모를 target으로 설정
-    if (y->right != NULL) {
-        y->right->parent = target;
+    if (y->right != tree->nil) {
+        y->right->parent = x;
     }
     // 4. y의 부모 노드를 target의 부모 노드로 설정
-    y->parent = target->parent;
+    y->parent = x->parent;
     // 5. target의 부모 노드가 nil이라면, 트리 구조체의 root를 y로 설정
-    if (target->parent == tree->nil)
+    if (x->parent == tree->nil)
         tree->root = y;
     // 6. target이 target 부모 노드의 왼쪽이면, target 부모의 왼쪽을 y로 설정
-    else if (target == target->parent->left)
-        target->parent->left = y;
+    else if (x == x->parent->left)
+        x->parent->left = y;
     // 7. target이 target 부모 노드의 오른쪽이면, target 부모의 오른쪽을 y로 설정
     else
-        target->parent->right = y;
+        x->parent->right = y;
     // 8. target을 y의 오른쪽으로 설정
-    y->right = target;
+    y->right = x;
     // 9. target의 부모를 y로 설정
-    target->parent = y;
+    x->parent = y;
 }
 
 void left_rotation(rbtree * tree, node_t * x){
     // TODO!
-    node_t *target;
     node_t *y;
-    
-    // 루트에서 삭제할 노드까지 이동
-    target = rbtree_find(tree, x->key);
 
-    if (target == NULL) {
-        return; 
-    }
-
-    y = target->right;
-    target->right = y->left;
+    y = x->right;
+    x->right = y->left;
     
     if (y->left != tree->nil) 
-        y->left->parent = target;
+        y->left->parent = x;
     
-    y->parent = target->parent;
+    y->parent = x->parent;
     
-    if (target->parent == tree->nil) 
+    if (x->parent == tree->nil) 
         tree->root = y;
-    else if (target == target->parent->left)
-        target->parent->left = y;
+    else if (x == x->parent->left)
+        x->parent->left = y;
     else 
-        target->parent->right = y;
+        x->parent->right = y;
 
-    y->left = target;
-    target->parent = y;
+    y->left = x;
+    x->parent = y;
 }
 
 void free_node(rbtree *t, node_t *x) {
@@ -187,14 +173,14 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
   rbtree_insert_fixup(t, z);
 
-  return t->root;
+  return z;
 }
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
   node_t * curr = t->root;
 
-  while (curr != NULL) {
+  while (curr != t->nil) {
     if (curr->key == key)
       return curr;
 
@@ -249,7 +235,7 @@ void rbtree_transplant(rbtree *t, node_t * u, node_t * v) {
 }
 
 void rbtree_delete_fixup(rbtree *t, node_t *x) {
-  while (x != t->nil && x->color == RBTREE_BLACK) {
+  while (x != t->root && x->color == RBTREE_BLACK) {
     if (x == x->parent->left){
       node_t *w = x->parent->right;
 
@@ -262,24 +248,27 @@ void rbtree_delete_fixup(rbtree *t, node_t *x) {
       }
 
       // CASE 2 : x의 형제 w는 흑색이고 w의 두 지식이 모두 흑색인 경우
-      if (w->left->color == RBTREE_RED && w->right->color == RBTREE_RED) {
-        w->color = RBTREE_BLACK;
+      if (w->left->color == RBTREE_BLACK && w->right->color == RBTREE_BLACK) {
+        w->color = RBTREE_RED;
         x = x->parent;
       }
 
       // CASE 3 : x의 형제 w는 흑색, w의 왼쪽 자식은 적색, w의 오른쪽 자신은 흑색인 경우
-      else if (w->right->color == RBTREE_BLACK) {
-        w->left->color = RBTREE_BLACK;
-        w->color = RBTREE_RED;
-        right_rotation(t, w);
-        w = x->parent->right;
-      }
+      else{ 
+        if (w->right->color == RBTREE_BLACK) {
+            w->left->color = RBTREE_BLACK;
+            w->color = RBTREE_RED;
+            right_rotation(t, w);
+            w = x->parent->right;
+        }
 
-      // CASE 4 : x의 형제 w는 흑색이고 w의 오른쪽 자식은 적색인 경우
-      w->color = x->parent->color;
-      x->parent->color = RBTREE_BLACK;
-      left_rotation(t, x->parent);
-      x = t->root;
+        // CASE 4 : x의 형제 w는 흑색이고 w의 오른쪽 자식은 적색인 경우
+        w->color = x->parent->color;
+        x->parent->color = RBTREE_BLACK;
+        w->right->color = RBTREE_BLACK;
+        left_rotation(t, x->parent);
+        x = t->root;
+      }
     }
     else {
       node_t *w = x->parent->left;
@@ -288,30 +277,33 @@ void rbtree_delete_fixup(rbtree *t, node_t *x) {
       if (w->color == RBTREE_RED){
         w->color = RBTREE_BLACK;
         x->parent->color = RBTREE_RED;
-        left_rotation(t, x->parent);
+        right_rotation(t, x->parent);
         w = x->parent->left;
       }
 
       // CASE 6 : x의 형제 w는 흑색이고 w의 두 지식이 모두 흑색인 경우
-      if (w->left->color == RBTREE_RED && w->right->color == RBTREE_RED) {
-        w->color = RBTREE_BLACK;
+      if (w->right->color == RBTREE_BLACK && w->left->color == RBTREE_BLACK) {
+        w->color = RBTREE_RED;
         x = x->parent;
       }
 
       // CASE 7 : x의 형제 w는 흑색, w의 왼쪽 자식은 적색, w의 오른쪽 자신은 흑색인 경우
-      else if (w->left->color == RBTREE_BLACK) {
+      else 
+      {
+          if (w->left->color == RBTREE_BLACK) {
+            w->right->color = RBTREE_BLACK;
+            w->color = RBTREE_RED;
+            left_rotation(t, w);
+            w = x->parent->left;
+            }
+
+        // CASE 8 : x의 형제 w는 흑색이고 w의 오른쪽 자식은 적색인 경우
+        w->color = x->parent->color;
+        x->parent->color = RBTREE_BLACK;
         w->left->color = RBTREE_BLACK;
-        w->color = RBTREE_RED;
-        left_rotation(t, w);
-        w = x->parent->left;
+        right_rotation(t, x->parent);
+        x = t->root;
       }
-
-      // CASE 8 : x의 형제 w는 흑색이고 w의 오른쪽 자식은 적색인 경우
-      w->color = x->parent->color;
-      x->parent->color = RBTREE_BLACK;
-      right_rotation(t, x->parent);
-      x = t->root;
-
     }
   }
 
@@ -354,7 +346,7 @@ int rbtree_erase(rbtree *t, node_t *p) {
 
     rbtree_transplant(t, p, y);
     y->left = p->left;
-    y->right = p->right;
+    y->left->parent = y;
     y->color = p->color;
   }
 
