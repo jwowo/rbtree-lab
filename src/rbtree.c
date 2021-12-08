@@ -15,31 +15,12 @@ rbtree *new_rbtree(void) {
   return p;
 }
 
-node_t * find_rotation_target(rbtree * tree, node_t * x) {
-    node_t * curr = tree->root;
-
-    while (curr != NULL) {
-        // 회전하려는 값을 가진 노드를 찾은 경우
-        if (curr->key == x->key) {
-            // printf("%d 를 찾았습니다~!\n", curr->key);
-            return curr;
-        }
-
-        // key 값을 비교하여 탐색
-        if (curr->key < x->key)
-            curr = curr->right;
-        else 
-            curr = curr->left;
-    }
-    return NULL;
-}
-
 void right_rotation(rbtree * tree, node_t * x){
     // TODO!
     node_t *target;
     node_t *y;
 
-    target = find_rotation_target(tree, x);
+    target = rbtree_find(tree, x->key);
 
     if (target == NULL) {
         return;
@@ -76,7 +57,7 @@ void left_rotation(rbtree * tree, node_t * x){
     node_t *y;
     
     // 루트에서 삭제할 노드까지 이동
-    target = find_rotation_target(tree, x);
+    target = rbtree_find(tree, x->key);
 
     if (target == NULL) {
         return; 
@@ -101,19 +82,19 @@ void left_rotation(rbtree * tree, node_t * x){
     target->parent = y;
 }
 
-void delete_node(rbtree *t, node_t *x) {
+void free_node(rbtree *t, node_t *x) {
   // 후위 순회 방식으로 RB Tree 내의 노드 메모리 반환
   if (x->left != t->nil) 
-    delete_node(t, x->left);
+    free_node(t, x->left);
   if (x->right != t->nil)
-    delete_node(t, x->right);
+    free_node(t, x->right);
   free(x);
 }
 
 void delete_rbtree(rbtree *t) {
   // TODO: reclaim the tree nodes's memory
   if (t->root != t->nil)
-    delete_node(t, t->root);
+    free_node(t, t->root);
   free(t->nil);
   free(t);
 }
