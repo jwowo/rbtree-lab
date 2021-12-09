@@ -75,6 +75,7 @@ void free_node(rbtree *t, node_t *x) {
   if (x->right != t->nil)
     free_node(t, x->right);
   free(x);
+  x = NULL;
 }
 
 void delete_rbtree(rbtree *t) {
@@ -178,16 +179,16 @@ node_t *rbtree_insert(rbtree *t, const key_t key) {
 
 node_t *rbtree_find(const rbtree *t, const key_t key) {
   // TODO: implement find
-  node_t * curr = t->root;
+  node_t * current = t->root;
 
-  while (curr != t->nil) {
+  while (current != t->nil) {
     if (curr->key == key)
-      return curr;
+      return current;
 
-    if (curr->key < key) 
-      curr = curr->right;
+    if (current->key < key) 
+      current = current->right;
     else
-      curr = curr->left;
+      current = current->left;
   }
 
   return NULL;
@@ -236,9 +237,10 @@ void rbtree_transplant(rbtree *t, node_t * u, node_t * v) {
 
 void rbtree_delete_fixup(rbtree *t, node_t *x) {
   while (x != t->root && x->color == RBTREE_BLACK) {
+    // CASE 1 ~ 4 : LEFT CASE
     if (x == x->parent->left){
       node_t *w = x->parent->right;
-
+      
       // CASE 1 : x의 형제 w가 적색인 경우
       if (w->color == RBTREE_RED){
         w->color = RBTREE_BLACK;
@@ -270,6 +272,7 @@ void rbtree_delete_fixup(rbtree *t, node_t *x) {
         x = t->root;
       }
     }
+    // CASE 5 ~ 8 : RIGHT CASE
     else {
       node_t *w = x->parent->left;
 
@@ -381,6 +384,6 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n) {
 
   size_t cnt = 0;
   subtree_to_array(t, t->root, arr, n, &cnt); 
+  
   return 0;
-
 }
